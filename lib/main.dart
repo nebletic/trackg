@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart'; // Importiere dein HomeScreen-Widget
+import 'screens/dashboard.dart';
 
 void main() {
   runApp(MyApp());
@@ -9,11 +9,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'TrackG App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: HomeScreen(), // Hier sollte dein HomeScreen geladen werden
+      title: 'TrackG',
+      theme: ThemeData.dark(), // Dunkles Thema für den Stil
+      home: DashboardScreen(), // Hier die neue Seite einfügen
     );
   }
 }
