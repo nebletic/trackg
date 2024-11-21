@@ -1,16 +1,24 @@
+// lib/screens/dashboard_screen.dart
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/settings_provider.dart';
 import 'settings_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final settingsProvider = Provider.of<SettingsProvider>(context);
+    final theme = Theme.of(context); // Access the current theme
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Nordschleife BTG'),
+        title: const Text('Nordschleife BTG'),
         centerTitle: true,
+        backgroundColor: theme.colorScheme.primary, // Use primary color from ColorScheme
         actions: [
+          // Settings Icon
           IconButton(
-            icon: Icon(Icons.settings),
+            icon: const Icon(Icons.settings),
             onPressed: () {
               // Navigate to SettingsScreen
               Navigator.of(context).push(
@@ -25,78 +33,78 @@ class DashboardScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _buildConnectionStatus(),
-            SizedBox(height: 20),
-            _buildLapInfo(),
-            SizedBox(height: 20),
-            _buildTimers(),
-            SizedBox(height: 20),
-            _buildGaugesRow(),
+            _buildConnectionStatus(theme),
+            const SizedBox(height: 20),
+            _buildLapInfo(theme),
+            const SizedBox(height: 20),
+            _buildTimers(theme),
+            const SizedBox(height: 20),
+            _buildGaugesRow(theme),
           ],
         ),
       ),
+      backgroundColor: theme.colorScheme.background, // Set background to theme's background color
     );
   }
 
-  Widget _buildConnectionStatus() {
+  // Adjusted to use theme's colors for the connection status
+  Widget _buildConnectionStatus(ThemeData theme) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
       decoration: BoxDecoration(
-        color: Colors.green,
+        color: theme.colorScheme.secondaryContainer, // Use secondary container color
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         'CONNECTED!',
-        style: TextStyle(
-          color: Colors.white,
+        style: theme.textTheme.bodyLarge?.copyWith(
+          color: theme.colorScheme.onSecondaryContainer, // Contrast text color
           fontWeight: FontWeight.bold,
-          fontSize: 16,
         ),
       ),
     );
   }
 
-  Widget _buildLapInfo() {
+  Widget _buildLapInfo(ThemeData theme) {
     return Column(
       children: [
         Image.asset(
-          'assets/nurburgring_logo.png', // Nürburgring-Logo einfügen
+          'assets/nurburgring_logo.png',
           height: 50,
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Text(
           'Lap 3',
-          style: TextStyle(
-            fontSize: 24,
+          style: theme.textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.bold,
+            color: theme.colorScheme.onBackground, // Adapt to background
           ),
         ),
       ],
     );
   }
 
-  Widget _buildTimers() {
+  // Adjusted to use theme's text styles and colors
+  Widget _buildTimers(ThemeData theme) {
     return Column(
       children: [
         Text(
           '01:23.592',
-          style: TextStyle(
-            fontSize: 48,
+          style: theme.textTheme.headlineLarge?.copyWith(
             fontWeight: FontWeight.bold,
+            color: theme.colorScheme.onBackground, // Adapt to background
           ),
         ),
         Text(
           'PREDICTED: 07:23.000',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.secondary, // Use theme's secondary color
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Text(
           '-0.592',
-          style: TextStyle(
-            fontSize: 24,
+          style: theme.textTheme.titleLarge?.copyWith(
             color: Colors.red,
             fontWeight: FontWeight.bold,
           ),
@@ -105,19 +113,21 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildGaugesRow() {
+  // Gauges now adapt to the theme's colors
+  Widget _buildGaugesRow(ThemeData theme) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _buildGauge('10', 'OAT', Colors.blue),
-        _buildGauge('Signal', 'STRENGTH', Colors.green),
-        _buildGauge('0.0', 'G-FORCE', Colors.red),
-        _buildGauge('-3%', 'SLOPE', Colors.orange),
+        _buildGauge('10', 'OAT', theme.colorScheme.primary, theme),
+        _buildGauge('Signal', 'STRENGTH', theme.colorScheme.secondary, theme),
+        _buildGauge('0.0', 'G-FORCE', theme.colorScheme.tertiary, theme),
+        _buildGauge('-3%', 'SLOPE', theme.colorScheme.error, theme), // Example with error color
       ],
     );
   }
 
-  Widget _buildGauge(String value, String label, Color color) {
+  // Adjust gauge color based on the theme using colorScheme
+  Widget _buildGauge(String value, String label, Color color, dynamic theme) {
     return Column(
       children: [
         Container(
@@ -125,7 +135,7 @@ class DashboardScreen extends StatelessWidget {
           width: 80,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: color, width: 4),
+            border: Border.all(color: color, width: 4), // Use theme color
           ),
           child: Center(
             child: Text(
@@ -133,17 +143,17 @@ class DashboardScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: color,
+                color: color, // Ensure text uses the same color as the gauge
               ),
             ),
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Text(
           label,
           style: TextStyle(
             fontSize: 14,
-            color: Colors.white,
+            color: theme.colorScheme.onBackground, // Adapt to background
           ),
         ),
       ],
