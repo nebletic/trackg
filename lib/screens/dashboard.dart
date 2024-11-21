@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'settings_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   @override
@@ -11,7 +12,10 @@ class DashboardScreen extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: () {
-              // Zahnrad-Button Funktionalität hier einfügen
+              // Navigate to SettingsScreen
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => SettingsScreen()),
+              );
             },
           ),
         ],
