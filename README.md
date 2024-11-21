@@ -4,7 +4,7 @@ china dragy wil mir arm sind
 
 ## Getting Started
 
-frög jonny shaba
+frög jonny shabai
 
 er isch ceo
 
