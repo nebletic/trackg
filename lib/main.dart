@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'screens/dashboard.dart';
+import 'package:trackg/screens/main_menu_screen.dart';
+import 'screens/main_menu_screen.dart';
 import 'package:provider/provider.dart';
 import 'providers/settings_provider.dart';
 import 'screens/settings_screen.dart';
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeBuilder.getTheme(settingsProvider.currentTheme),
           darkTheme: ThemeBuilder.getTheme('Dark'),
           themeMode: settingsProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-          home: DashboardScreen(),
+          home: MainMenuScreen(),
         );
       },
     );
