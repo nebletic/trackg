@@ -9,7 +9,9 @@ class ThemeBuilder {
       scaffoldBackgroundColor: Colors.white,
       colorScheme: ColorScheme.fromSwatch().copyWith(
         primary: Colors.blue,
-        secondary: Colors.orange,  // Use for accents
+        secondary: Colors.orange,
+        surface: Colors.white, // Use white for default surface
+        onSurface: Colors.black, // Use black text on surface
       ),
       // Custom colors for dashboard
       cardColor: Colors.blue[200]!,
@@ -22,6 +24,8 @@ class ThemeBuilder {
       colorScheme: ColorScheme.fromSwatch(brightness: Brightness.dark).copyWith(
         primary: Colors.grey[900]!,
         secondary: Colors.blueAccent,
+        surface: Colors.grey[850], // Dark surface for dark theme
+        onSurface: Colors.white,  // Use white text on dark surface
       ),
       cardColor: Colors.grey[800]!,
       indicatorColor: Colors.grey[600]!,
@@ -33,6 +37,8 @@ class ThemeBuilder {
       colorScheme: ColorScheme.fromSwatch().copyWith(
         primary: Colors.teal,
         secondary: Colors.lightBlueAccent,
+        surface: Colors.teal, // Light surface for Ocean theme
+        onSurface: Colors.black, // Black text on light surface
       ),
       cardColor: Colors.teal[200]!,
       indicatorColor: Colors.teal,

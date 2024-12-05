@@ -43,7 +43,7 @@ class DashboardScreen extends StatelessWidget {
           ],
         ),
       ),
-      backgroundColor: theme.colorScheme.background, // Set background to theme's background color
+      backgroundColor: theme.colorScheme.surface, // Use theme's surface color
     );
   }
 
@@ -77,7 +77,7 @@ class DashboardScreen extends StatelessWidget {
           'Lap 3',
           style: theme.textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.bold,
-            color: theme.colorScheme.onBackground, // Adapt to background
+            color: theme.colorScheme.onSurface, // Adapt to surface color
           ),
         ),
       ],
@@ -92,7 +92,7 @@ class DashboardScreen extends StatelessWidget {
           '01:23.592',
           style: theme.textTheme.headlineLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: theme.colorScheme.onBackground, // Adapt to background
+            color: theme.colorScheme.onSurface, // Adapt to surface color
           ),
         ),
         Text(
@@ -153,7 +153,7 @@ class DashboardScreen extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 14,
-            color: theme.colorScheme.onBackground, // Adapt to background
+            color: theme.colorScheme.onSurface, // Adapt to surface color
           ),
         ),
       ],
