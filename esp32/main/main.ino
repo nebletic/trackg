@@ -31,7 +31,7 @@ float pitch = 0.0, roll = 0.0;
 void setupGPS() {
     Serial.println("Starting GPS...");
     GPS_Serial.begin(9600, SERIAL_8N1, 16, 17); // RX=16, TX=17
-    delay(1000); // Wait for GPS module to stabilize
+    delay(2000); // Wait for GPS module to stabilize
     Serial.println("GPS initialized. Checking data...");
 }
 
@@ -57,9 +57,19 @@ void processGPS() {
         if (gps.encode(c)) {
             if (gps.location.isUpdated()) {
                 Serial.println("GPS data updated.");
+                Serial.print("Latitude: ");
+                Serial.println(gps.location.lat(), 6);
+                Serial.print("Longitude: ");
+                Serial.println(gps.location.lng(), 6);
+                Serial.print("Satellites: ");
+                Serial.println(gps.satellites.value()); // Number of satellites in view
+                Serial.print("HDOP: ");
+                Serial.println(gps.hdop.value()); 
                 latitude = gps.location.lat();
                 longitude = gps.location.lng();
                 speed_kmh = gps.speed.kmph();
+            } else {
+            Serial.println("Waiting for GPS location update...");
             }
         }
     }
@@ -113,7 +123,7 @@ void setup() {
 
   // Initialize GPS and IMU
   setupGPS();
-  //setupIMU();
+  setupIMU();
 
   // Start Wi-Fi hotspot
   WiFi.softAP(ssid, password);
@@ -139,12 +149,12 @@ void setup() {
 
 void loop() {
   processGPS();
-  //processIMU();
+  processIMU();
 
   // Send telemetry data to all WebSocket clients
   String telemetry = getTelemetryJSON();
   ws.textAll(telemetry);
   Serial.println("WebSocket: Telemetry data sent.");
 
-  delay(100); // Adjust as needed for update rate
+  delay(500); // Adjust as needed for update rate
 }
