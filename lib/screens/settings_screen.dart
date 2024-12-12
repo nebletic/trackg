@@ -5,6 +5,8 @@ import '../providers/settings_provider.dart';
 import '../themes/theme_builder.dart';
 
 class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final settingsProvider = Provider.of<SettingsProvider>(context);
