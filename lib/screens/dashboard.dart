@@ -1,22 +1,42 @@
 // lib/screens/dashboard_screen.dart
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/settings_provider.dart';
+import 'track_screen.dart';
 import 'settings_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
+  final List<Map<String, String>> tracks = [
+    {
+      'name': 'Nürburgring Nordschleife',
+      'description': 'The Green Hell - 20.8 km of legendary racing history.',
+      'imagePath': 'assets/track_nordschleife.jpg',
+    },
+    {
+      'name': 'Circuit de Spa-Francorchamps',
+      'description': 'Home of the Belgian GP - Iconic turns like Eau Rouge.',
+      'imagePath': 'assets/track_spa.jpg',
+    },
+    {
+      'name': 'Silverstone Circuit',
+      'description': 'The birthplace of Formula 1 - Fast and technical.',
+      'imagePath': 'assets/track_silverstone.jpg',
+    },
+    {
+      'name': 'Suzuka Circuit',
+      'description': 'Tight battles, sharp turns, pure precision racing.',
+      'imagePath': 'assets/track_suzuka.jpg',
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
-    final settingsProvider = Provider.of<SettingsProvider>(context);
-    final theme = Theme.of(context); // Access the current theme
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nordschleife BTG'),
+        title: const Text('Select a Track'),
         centerTitle: true,
-        backgroundColor: theme.colorScheme.primary, // Use primary color from ColorScheme
+        backgroundColor: theme.colorScheme.primary,
         actions: [
-          // Settings Icon
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
@@ -28,135 +48,109 @@ class DashboardScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _buildConnectionStatus(theme),
-            const SizedBox(height: 20),
-            _buildLapInfo(theme),
-            const SizedBox(height: 20),
-            _buildTimers(theme),
-            const SizedBox(height: 20),
-            _buildGaugesRow(theme),
-          ],
-        ),
-      ),
-      backgroundColor: theme.colorScheme.surface, // Use theme's surface color
-    );
-  }
-
-  // Adjusted to use theme's colors for the connection status
-  Widget _buildConnectionStatus(ThemeData theme) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.secondaryContainer, // Use secondary container color
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        'CONNECTED!',
-        style: theme.textTheme.bodyLarge?.copyWith(
-          color: theme.colorScheme.onSecondaryContainer, // Contrast text color
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLapInfo(ThemeData theme) {
-    return Column(
-      children: [
-        Image.asset(
-          'assets/nurburgring_logo.png',
-          height: 50,
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Lap 3',
-          style: theme.textTheme.headlineMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.onSurface, // Adapt to surface color
-          ),
-        ),
-      ],
-    );
-  }
-
-  // Adjusted to use theme's text styles and colors
-  Widget _buildTimers(ThemeData theme) {
-    return Column(
-      children: [
-        Text(
-          '01:23.592',
-          style: theme.textTheme.headlineLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.onSurface, // Adapt to surface color
-          ),
-        ),
-        Text(
-          'PREDICTED: 07:23.000',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.secondary, // Use theme's secondary color
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          '-0.592',
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: Colors.red,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    );
-  }
-
-  // Gauges now adapt to the theme's colors
-  Widget _buildGaugesRow(ThemeData theme) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        _buildGauge('10', 'OAT', theme.colorScheme.primary, theme),
-        _buildGauge('Signal', 'STRENGTH', theme.colorScheme.secondary, theme),
-        _buildGauge('0.0', 'G-FORCE', theme.colorScheme.tertiary, theme),
-        _buildGauge('-3%', 'SLOPE', theme.colorScheme.error, theme), // Example with error color
-      ],
-    );
-  }
-
-  // Adjust gauge color based on the theme using colorScheme
-  Widget _buildGauge(String value, String label, Color color, dynamic theme) {
-    return Column(
-      children: [
-        Container(
-          height: 80,
-          width: 80,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: color, width: 4), // Use theme color
-          ),
-          child: Center(
-            child: Text(
-              value,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: color, // Ensure text uses the same color as the gauge
+      body: Column(
+        children: [
+          // Auto-Locate Button
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton.icon(
+              icon: const Icon(Icons.gps_fixed),
+              label: const Text('Auto-Locate Track'),
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size.fromHeight(50),
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
+              onPressed: () {
+                // Placeholder for GPS logic
+              },
+            ),
+          ),
+          // Track Selector Buttons
+          Expanded(
+            child: ListView.builder(
+              itemCount: tracks.length,
+              itemBuilder: (context, index) {
+                final track = tracks[index];
+                return _buildTrackButton(
+                  context,
+                  name: track['name']!,
+                  description: track['description']!,
+                  imagePath: track['imagePath']!,
+                  onTap: () {
+                    // Navigate to the selected track's screen
+                  },
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTrackButton(
+    BuildContext context, {
+    required String name,
+    required String description,
+    required String imagePath,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => TrackScreen(
+              trackName: name,
+              trackDescription: description,
+              trackLogoPath: imagePath,
+            ),
+          ),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        height: 120,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          image: DecorationImage(
+            image: AssetImage(imagePath),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.black.withOpacity(0.4),
+              BlendMode.srcOver,
             ),
           ),
         ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            color: theme.colorScheme.onSurface, // Adapt to surface color
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                name,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                description,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                ),
+              ),
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 }
