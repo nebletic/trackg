@@ -57,7 +57,7 @@ class MainMenuScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => DashboardScreen(),
+                          builder: (context) => TrackSelectorScreen(),
                         ),
                       );
                     },

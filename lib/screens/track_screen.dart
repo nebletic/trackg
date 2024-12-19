@@ -16,19 +16,17 @@ class TrackScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context); // Access the current theme
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(trackName), // Dynamic track name
         centerTitle: true,
-        backgroundColor: theme.colorScheme.primary, // Use primary color from ColorScheme
+        backgroundColor: theme.colorScheme.primary,
         actions: [
-          // Settings Icon
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
-              // Navigate to SettingsScreen
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) => SettingsScreen()),
               );
@@ -41,7 +39,10 @@ class TrackScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _buildTrackInfo(theme), // Dynamic track info
+            // Track Logo Section
+            _buildTrackLogo(),
+            const SizedBox(height: 20),
+            _buildTrackInfo(theme),
             const SizedBox(height: 20),
             _buildTimers(theme),
             const SizedBox(height: 20),
@@ -53,35 +54,36 @@ class TrackScreen extends StatelessWidget {
     );
   }
 
-  // Adjusted dynamic track info section
+  Widget _buildTrackLogo() {
+    return Image.asset(
+      trackLogoPath, // Dynamic logo image
+      height: 100,
+      fit: BoxFit.contain,
+    );
+  }
+
   Widget _buildTrackInfo(ThemeData theme) {
     return Column(
       children: [
-        Image.asset(
-          trackLogoPath, // Dynamic track logo
-          height: 100,
-        ),
-        const SizedBox(height: 8),
         Text(
-          trackName, // Dynamic track name
+          trackName,
           style: theme.textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.bold,
-            color: theme.colorScheme.onSurface, // Adapt to surface color
+            color: theme.colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 4),
         Text(
-          trackDescription, // Dynamic track description
+          trackDescription,
           textAlign: TextAlign.center,
           style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurface, // Adapt to surface color
+            color: theme.colorScheme.onSurface,
           ),
         ),
       ],
     );
   }
 
-  // Adjusted to use theme's text styles and colors
   Widget _buildTimers(ThemeData theme) {
     return Column(
       children: [
@@ -89,13 +91,13 @@ class TrackScreen extends StatelessWidget {
           '01:23.592',
           style: theme.textTheme.headlineLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: theme.colorScheme.onSurface, // Adapt to surface color
+            color: theme.colorScheme.onSurface,
           ),
         ),
         Text(
           'PREDICTED: 07:23.000',
           style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.secondary, // Use theme's secondary color
+            color: theme.colorScheme.secondary,
           ),
         ),
         const SizedBox(height: 8),
@@ -110,21 +112,19 @@ class TrackScreen extends StatelessWidget {
     );
   }
 
-  // Gauges now adapt to the theme's colors
   Widget _buildGaugesRow(ThemeData theme) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _buildGauge('10', 'OAT', theme.colorScheme.primary, theme),
-        _buildGauge('Signal', 'STRENGTH', theme.colorScheme.secondary, theme),
-        _buildGauge('0.0', 'G-FORCE', theme.colorScheme.tertiary, theme),
-        _buildGauge('-3%', 'SLOPE', theme.colorScheme.error, theme), // Example with error color
+        _buildGauge('10', 'OAT', theme.colorScheme.primary),
+        _buildGauge('Signal', 'STRENGTH', theme.colorScheme.secondary),
+        _buildGauge('0.0', 'G-FORCE', theme.colorScheme.tertiary),
+        _buildGauge('-3%', 'SLOPE', theme.colorScheme.error),
       ],
     );
   }
 
-  // Adjust gauge color based on the theme using colorScheme
-  Widget _buildGauge(String value, String label, Color color, ThemeData theme) {
+  Widget _buildGauge(String value, String label, Color color) {
     return Column(
       children: [
         Container(
@@ -132,7 +132,7 @@ class TrackScreen extends StatelessWidget {
           width: 80,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: color, width: 4), // Use theme color
+            border: Border.all(color: color, width: 4),
           ),
           child: Center(
             child: Text(
@@ -140,7 +140,7 @@ class TrackScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: color, // Ensure text uses the same color as the gauge
+                color: color,
               ),
             ),
           ),
@@ -148,9 +148,9 @@ class TrackScreen extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 14,
-            color: theme.colorScheme.onSurface, // Adapt to surface color
+            color: Colors.black,
           ),
         ),
       ],
