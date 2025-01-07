@@ -1,6 +1,6 @@
 // lib/screens/dashboard_screen.dart
 import 'package:flutter/material.dart';
-import 'package:fuzzywuzzy/fuzzywuzzy.dart';
+import 'package:geolocator/geolocator.dart';
 import 'track_screen.dart';
 import 'settings_screen.dart';
 
@@ -10,179 +10,199 @@ class TrackSelectorScreen extends StatefulWidget {
 }
 
 class _TrackSelectorScreenState extends State<TrackSelectorScreen> {
-  final List<Map<String, String>> tracks = [
+  final List<Map<String, dynamic>> tracks = [
     {
       'name': 'Current Position',
       'description': 'Drive responsibly! (Requires Location Services)',
       'imagePath': 'assets/placeholder.png',
       'logoPath': 'assets/placeholder.png',
+      'boundingBox': null, // No predefined area
     },
     {
       'name': 'Nürburgring Nordschleife',
       'description': 'The Green Hell - 20.8 km of legendary racing history.',
       'imagePath': 'assets/track_nordschleife.jpg',
       'logoPath': 'assets/logo_nordschleife.png',
+      'boundingBox': {
+        'minLat': 50.3239,
+        'maxLat': 50.4390,
+        'minLng': 6.9369,
+        'maxLng': 7.0149,
+      },
     },
     {
       'name': 'Circuit de Spa-Francorchamps',
       'description': 'Home of the Belgian GP - Iconic turns like Eau Rouge.',
       'imagePath': 'assets/track_spa.jpg',
       'logoPath': 'assets/logo_spa.png',
+      'boundingBox': {
+        'minLat': 50.4283,
+        'maxLat': 50.4515,
+        'minLng': 5.9406,
+        'maxLng': 5.9707,
+      },
     },
     {
       'name': 'Silverstone Circuit',
       'description': 'The birthplace of Formula 1 - Fast and technical.',
       'imagePath': 'assets/track_silverstone.jpg',
       'logoPath': 'assets/logo_silverstone.png',
+      'boundingBox': {
+        'minLat': 52.0615,
+        'maxLat': 52.0899,
+        'minLng': -1.0201,
+        'maxLng': -0.9956,
+      },
     },
     {
       'name': 'Suzuka Circuit',
       'description': 'Tight battles, sharp turns, pure precision racing.',
       'imagePath': 'assets/track_suzuka.jpg',
       'logoPath': 'assets/logo_suzuka.png',
+      'boundingBox': {
+        'minLat': 34.8434,
+        'maxLat': 34.8665,
+        'minLng': 136.5878,
+        'maxLng': 136.6100,
+      },
     },
     {
       'name': 'Dangerous Road Winterthur Ed.',
       'description': 'Killer of Volvos. Ruthless and unforgiving.',
       'imagePath': 'assets/track_winti.jpeg',
       'logoPath': 'assets/logo_winti.png',
+      'boundingBox': {
+        'minLat': 47.4980,
+        'maxLat': 47.5080,
+        'minLng': 8.7010,
+        'maxLng': 8.7210,
+      },
     },
     {
-    'name': 'Tsukuba Circuit',
-    'description': 'Compact and technical - A favorite for time attack.',
-    'imagePath': 'assets/track_tsukuba.jpg',
-    'logoPath': 'assets/logo_tsukuba.png',
+      'name': 'Tsukuba Circuit',
+      'description': 'Compact and technical - A favorite for time attack.',
+      'imagePath': 'assets/track_tsukuba.jpg',
+      'logoPath': 'assets/logo_tsukuba.png',
+      'boundingBox': {
+        'minLat': 36.1835,
+        'maxLat': 36.1987,
+        'minLng': 140.0862,
+        'maxLng': 140.1052,
+      },
     },
     {
       'name': 'Autodromo Nazionale Monza',
       'description': 'Temple of Speed - High-speed straights and chicanes.',
       'imagePath': 'assets/track_monza.jpg',
       'logoPath': 'assets/logo_monza.png',
+      'boundingBox': {
+        'minLat': 45.6105,
+        'maxLat': 45.6235,
+        'minLng': 9.2655,
+        'maxLng': 9.2895,
+      },
     },
     {
       'name': 'Autodromo Enzo e Dino Ferrari',
       'description': 'Imola - A historic circuit with challenging corners.',
       'imagePath': 'assets/track_imola.jpg',
       'logoPath': 'assets/logo_imola.png',
+      'boundingBox': {
+        'minLat': 44.3413,
+        'maxLat': 44.3595,
+        'minLng': 11.6986,
+        'maxLng': 11.7209,
+      },
     },
     {
       'name': 'Circuito Ascari',
       'description': 'Exclusive and technical - A driver’s paradise.',
       'imagePath': 'assets/track_ascari.jpg',
       'logoPath': 'assets/logo_ascari.png',
+      'boundingBox': {
+        'minLat': 36.7995,
+        'maxLat': 36.8185,
+        'minLng': -5.1650,
+        'maxLng': -5.1450,
+      },
     },
     {
       'name': 'Red Bull Ring',
       'description': 'Austria’s gem - High-speed and stunning scenery.',
       'imagePath': 'assets/track_redbullring.jpg',
       'logoPath': 'assets/logo_redbullring.png',
+      'boundingBox': {
+        'minLat': 47.2171,
+        'maxLat': 47.2250,
+        'minLng': 14.7555,
+        'maxLng': 14.7705,
+      },
     },
     {
       'name': 'Autodromo Vallelunga',
       'description': 'Technical and versatile - A testing ground for cars.',
       'imagePath': 'assets/track_vallelunga.jpg',
       'logoPath': 'assets/logo_vallelunga.png',
+      'boundingBox': {
+        'minLat': 42.1305,
+        'maxLat': 42.1450,
+        'minLng': 12.4135,
+        'maxLng': 12.4350,
+      },
     },
     {
       'name': 'Circuito de Vila Real',
       'description': 'A thrilling street circuit in Portugal.',
       'imagePath': 'assets/track_vilareal.jpg',
       'logoPath': 'assets/logo_vilareal.png',
+      'boundingBox': {
+        'minLat': 41.2930,
+        'maxLat': 41.3050,
+        'minLng': -7.7330,
+        'maxLng': -7.7170,
+      },
     },
     {
       'name': 'Autódromo Internacional do Algarve',
       'description': 'Portimão - Rollercoaster-like elevation changes.',
       'imagePath': 'assets/track_algarve.jpg',
       'logoPath': 'assets/logo_algarve.png',
-    },
-    {
-      'name': 'Circuito do Estoril',
-      'description': 'Once home to F1 - A classic Portuguese circuit.',
-      'imagePath': 'assets/track_estoril.jpg',
-      'logoPath': 'assets/logo_estoril.png',
+      'boundingBox': {
+        'minLat': 37.1820,
+        'maxLat': 37.2000,
+        'minLng': -8.6250,
+        'maxLng': -8.6050,
+      },
     },
     {
       'name': 'Circuit Paul Ricard',
       'description': 'Colorful stripes and high-speed straights.',
       'imagePath': 'assets/track_paulricard.jpg',
       'logoPath': 'assets/logo_paulricard.png',
-    },
-    {
-      'name': 'Circuit de Bresse',
-      'description': 'A compact French track for versatile racing.',
-      'imagePath': 'assets/track_bresse.png',
-      'logoPath': 'assets/logo_bresse.png',
-    },
-    {
-      'name': 'Anneau du Rhin',
-      'description': 'Technical French track with a rich racing culture.',
-      'imagePath': 'assets/track_anneaudurhin.jpg',
-      'logoPath': 'assets/logo_anneaudurhin.png',
-    },
-    {
-      'name': 'Circuit des 24 Heures du Mans',
-      'description': 'Home of the iconic endurance race.',
-      'imagePath': 'assets/track_lemans.jpg',
-      'logoPath': 'assets/logo_lemans.png',
-    },
-    {
-      'name': 'Hockenheimring Baden-Württemberg',
-      'description': 'A German classic with high-speed straights.',
-      'imagePath': 'assets/track_hockenheimring.jpg',
-      'logoPath': 'assets/logo_hockenheimring.png',
-    },
-    {
-      'name': 'Bilster Berg',
-      'description': 'Challenging and modern - Germany’s hidden gem.',
-      'imagePath': 'assets/track_bilsterberg.png',
-      'logoPath': 'assets/logo_bilsterberg.png',
-    },
-    {
-      'name': 'Sachsenring',
-      'description': 'Tight corners and elevation changes in Germany.',
-      'imagePath': 'assets/track_sachsenring.jpg',
-      'logoPath': 'assets/logo_sachsenring.png',
-    },
-    {
-      'name': 'Indianapolis Motor Speedway',
-      'description': 'The Brickyard - A legendary oval and road course.',
-      'imagePath': 'assets/track_indianapolis.png',
-      'logoPath': 'assets/logo_indianapolis.png',
-    },
-    {
-      'name': 'Circuit of The Americas',
-      'description': 'Austin’s F1 home - Fast and technical sections.',
-      'imagePath': 'assets/track_cota.jpg',
-      'logoPath': 'assets/logo_cota.png',
-    },
-    {
-      'name': 'Laguna Seca',
-      'description': 'The Corkscrew - Iconic elevation drop in the US.',
-      'imagePath': 'assets/track_laguna.jpg',
-      'logoPath': 'assets/logo_laguna.png',
-    },
-    {
-      'name': 'Willow Springs Racetrack',
-      'description': 'High-speed corners in the Californian desert.',
-      'imagePath': 'assets/track_willowsprings.png',
-      'logoPath': 'assets/logo_willowsprings.png',
-    },
-    {
-      'name': 'Autódromo José Carlos Pace',
-      'description': 'Interlagos - Home of thrilling F1 finales.',
-      'imagePath': 'assets/track_interlagos.jpg',
-      'logoPath': 'assets/logo_interlagos.png',
+      'boundingBox': {
+        'minLat': 43.2475,
+        'maxLat': 43.2610,
+        'minLng': 5.7920,
+        'maxLng': 5.8170,
+      },
     },
     {
       'name': 'Mount Panorama Circuit',
       'description': 'Bathurst - A legendary track in Australia.',
       'imagePath': 'assets/track_mountpanorama.jpg',
       'logoPath': 'assets/logo_mountpanorama.png',
+      'boundingBox': {
+        'minLat': -33.4395,
+        'maxLat': -33.4255,
+        'minLng': 149.5400,
+        'maxLng': 149.5650,
+      },
     },
   ];
 
   String searchQuery = '';
-  late List<Map<String, String>> filteredTracks;
+  late List<Map<String, dynamic>> filteredTracks;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -190,42 +210,87 @@ class _TrackSelectorScreenState extends State<TrackSelectorScreen> {
     filteredTracks = tracks; // Initialize with all tracks
   }
 
-  //it still doesnt search properly...can we start from the beginning? it should search for it across all the strings and if it matches with like this regex "*circuit*" it should show me all tracks with circuit ANYWHERE in the name or description.
-
   void _filterTracks(String query) {
     setState(() {
-      searchQuery = query.trim().toLowerCase(); // Normalize query
+      searchQuery = query.trim().toLowerCase(); // Normalize the query
 
       if (searchQuery.isEmpty) {
-        filteredTracks = tracks; // Show all tracks if query is empty
+        filteredTracks = tracks; // Show all tracks if the query is empty
       } else {
-        // Step 1: Exact substring match
-        final exactMatches = tracks.where((track) {
-          final trackName = track['name']!.toLowerCase();
-          final trackDescription = track['description']!.toLowerCase();
-          return trackName.contains(searchQuery) || trackDescription.contains(searchQuery);
+        // Use regex to match the query anywhere in the name or description
+        final regex = RegExp(RegExp.escape(searchQuery), caseSensitive: false);
+
+        filteredTracks = tracks.where((track) {
+          final trackName = track['name']!;
+          final trackDescription = track['description']!;
+          return regex.hasMatch(trackName) || regex.hasMatch(trackDescription);
         }).toList();
-
-        // Step 2: Fuzzy matching (if no exact matches or for broader matching)
-        //final fuzzyMatches = tracks.where((track) {
-        //  final trackName = track['name']!;
-        //  final trackDescription = track['description']!;
-//
-        //  final nameScore = partialRatio(searchQuery, trackName.toLowerCase());
-        //  final descriptionScore = partialRatio(searchQuery, trackDescription.toLowerCase());
-//
-        //  // Keep tracks with a match score above 60
-        //  return nameScore > 50 || descriptionScore > 50;
-        //}).toList();
-
-        // Combine results, giving preference to exact matches
-        filteredTracks = [...exactMatches]
-            .toSet()
-            .toList(); // Remove duplicates
       }
     });
   }
 
+  Future<void> _autoLocateTrack() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      // Check location permissions
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          // Permissions are denied
+          throw 'Location permissions are denied. Please enable them in settings.';
+        }
+      }
+
+      // Get current position
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      final userLat = position.latitude;
+      final userLng = position.longitude;
+
+      // Check if user is within any track's bounding box
+      for (var track in tracks) {
+        final boundingBox = track['boundingBox'];
+        if (boundingBox != null) {
+          if (userLat >= boundingBox['minLat'] &&
+              userLat <= boundingBox['maxLat'] &&
+              userLng >= boundingBox['minLng'] &&
+              userLng <= boundingBox['maxLng']) {
+            // Match found! Show the track screen
+            Navigator.of(context).push(_createSlideRoute(
+              TrackScreen(
+                trackName: track['name'],
+                trackDescription: track['description'],
+                trackLogoPath: track['logoPath'],
+              ),
+            ));
+            setState(() {
+              isLoading = false;
+            });
+            return;
+          }
+        }
+      }
+
+      // No track matched
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No track found at your location.')),
+      );
+    } catch (e) {
+      // Handle errors (e.g., location permissions denied)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
 
   @override
@@ -268,7 +333,11 @@ class _TrackSelectorScreenState extends State<TrackSelectorScreen> {
           // Auto-Locate Button
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton.icon(
+            child: isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(), // Show spinner if loading
+                  )
+                : ElevatedButton.icon(
               icon: const Icon(Icons.gps_fixed),
               label: const Text('Auto-Locate Track'),
               style: ElevatedButton.styleFrom(
@@ -279,17 +348,15 @@ class _TrackSelectorScreenState extends State<TrackSelectorScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              onPressed: () {
-                // Placeholder for GPS logic
-              },
+              onPressed: _autoLocateTrack,
             ),
           ),
           // Track Selector Buttons
           Expanded(
             child: ListView.builder(
-              itemCount: filteredTracks.length, 
+              itemCount: filteredTracks.length,
               itemBuilder: (context, index) {
-                final track = tracks[index];
+                final track = filteredTracks[index];
                 return _buildTrackButton(
                   context,
                   name: track['name']!,
