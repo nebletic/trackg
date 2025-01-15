@@ -1,39 +1,26 @@
-#include <WiFi.h>
-#include <TinyGPS++.h>
-#include <Wire.h>
+#include <BLEDevice.h>
+#include <BLEServer.h>
+#include <BLEUtils.h>
+#include <BLE2902.h>
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
-#include <ESPAsyncWebServer.h>
-#include <AsyncTCP.h>
 #include <ArduinoJson.h>
-
-// GPS setup
-TinyGPSPlus gps;
-HardwareSerial GPS_Serial(1); // Use UART1 for GPS
 
 // IMU setup
 Adafruit_MPU6050 mpu;
 
-// Wi-Fi Access Point settings
-const char *ssid = "TLP_DEV";
-const char *password = "12345678";
-
-// Web server and WebSocket setup
-AsyncWebServer server(80);
-AsyncWebSocket ws("/ws");
+// BLE setup
+BLEServer* pServer = NULL;
+BLECharacteristic* pCharacteristic = NULL;
+bool deviceConnected = false;
+bool oldDeviceConnected = false;
+const char* serviceUUID = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
+const char* characteristicUUID = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
 
 // Telemetry data variables
-float latitude = 0.0, longitude = 0.0, speed_kmh = 0.0;
 float g_force_x = 0.0, g_force_y = 0.0, g_force_z = 0.0;
 float pitch = 0.0, roll = 0.0;
-
-// Function to setup GPS module
-void setupGPS() {
-    Serial.println("Starting GPS...");
-    GPS_Serial.begin(9600, SERIAL_8N1, 16, 17); // RX=16, TX=17
-    delay(2000); // Wait for GPS module to stabilize
-    Serial.println("GPS initialized. Checking data...");
-}
+float slope = 0.0; // Slope calculation variable
 
 // Function to setup IMU module
 void setupIMU() {
@@ -48,113 +35,97 @@ void setupIMU() {
     Serial.println("IMU initialized.");
 }
 
+// BLE Server Callbacks
+class MyServerCallbacks: public BLEServerCallbacks {
+    void onConnect(BLEServer* pServer) {
+      deviceConnected = true;
+    };
 
-// Function to process GPS data
-void processGPS() {
-    while (GPS_Serial.available() > 0) {
-        char c = GPS_Serial.read();
-        Serial.print(c); // Print raw GPS data for debugging
-        if (gps.encode(c)) {
-            if (gps.location.isUpdated()) {
-                Serial.println("GPS data updated.");
-                Serial.print("Latitude: ");
-                Serial.println(gps.location.lat(), 6);
-                Serial.print("Longitude: ");
-                Serial.println(gps.location.lng(), 6);
-                Serial.print("Satellites: ");
-                Serial.println(gps.satellites.value()); // Number of satellites in view
-                Serial.print("HDOP: ");
-                Serial.println(gps.hdop.value()); 
-                latitude = gps.location.lat();
-                longitude = gps.location.lng();
-                speed_kmh = gps.speed.kmph();
-            } else {
-            Serial.println("Waiting for GPS location update...");
-            }
-        }
+    void onDisconnect(BLEServer* pServer) {
+      deviceConnected = false;
     }
-}
-
-// Function to process IMU data
-void processIMU() {
-  sensors_event_t a, g, temp;
-  mpu.getEvent(&a, &g, &temp);
-
-  g_force_x = a.acceleration.x;
-  g_force_y = a.acceleration.y;
-  g_force_z = a.acceleration.z;
-  pitch = atan2(g_force_y, sqrt(g_force_x * g_force_x + g_force_z * g_force_z)) * 180 / PI;
-  roll = atan2(-g_force_x, g_force_z) * 180 / PI;
-
-  Serial.printf("IMU Data - G-Force X: %.2f, Y: %.2f, Z: %.2f, Pitch: %.2f, Roll: %.2f\n", g_force_x, g_force_y, g_force_z, pitch, roll);
-}
-
-// Function to generate telemetry JSON data
-String getTelemetryJSON() {
-  DynamicJsonDocument doc(256);
-
-  doc["latitude"] = latitude;
-  doc["longitude"] = longitude;
-  doc["speed_kmh"] = speed_kmh;
-  doc["g_force_x"] = g_force_x;
-  doc["g_force_y"] = g_force_y;
-  doc["g_force_z"] = g_force_z;
-  doc["pitch"] = pitch;
-  doc["roll"] = roll;
-
-  String json;
-  serializeJson(doc, json);
-  return json;
-}
-
-// WebSocket message handler
-void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type,
-               void *arg, uint8_t *data, size_t len) {
-  if (type == WS_EVT_CONNECT) {
-    Serial.printf("WebSocket client #%u connected\n", client->id());
-  } else if (type == WS_EVT_DISCONNECT) {
-    Serial.printf("WebSocket client #%u disconnected\n", client->id());
-  }
-}
+};
 
 void setup() {
-  Serial.begin(115200);
-  Serial.println("Starting ESP32 Telemetry System...");
+    // Start serial communication for debugging
+    Serial.begin(115200);
 
-  // Initialize GPS and IMU
-  setupGPS();
-  setupIMU();
+    // Initialize IMU
+    setupIMU();
 
-  // Start Wi-Fi hotspot
-  WiFi.softAP(ssid, password);
-  Serial.println("Wi-Fi hotspot started.");
-  Serial.print("IP Address: ");
-  Serial.println(WiFi.softAPIP());
+    // Initialize BLE
+    BLEDevice::init("ESP32_BLE");
+    pServer = BLEDevice::createServer();
+    pServer->setCallbacks(new MyServerCallbacks());
 
-  // Set up WebSocket server
-  ws.onEvent(onWsEvent);
-  server.addHandler(&ws);
+    BLEService *pService = pServer->createService(serviceUUID);
+    pCharacteristic = pService->createCharacteristic(
+                        characteristicUUID,
+                        BLECharacteristic::PROPERTY_READ |
+                        BLECharacteristic::PROPERTY_WRITE |
+                        BLECharacteristic::PROPERTY_NOTIFY |
+                        BLECharacteristic::PROPERTY_INDICATE
+                      );
+    pCharacteristic->addDescriptor(new BLE2902());
 
-  // HTTP telemetry endpoint
-  server.on("/telemetry", HTTP_GET, [](AsyncWebServerRequest *request) {
-    String telemetry = getTelemetryJSON();
-    request->send(200, "application/json", telemetry);
-    Serial.println("HTTP: Telemetry data sent.");
-  });
-
-  // Start server
-  server.begin();
-  Serial.println("HTTP and WebSocket servers started.");
+    pService->start();
+    pServer->getAdvertising()->start();
+    Serial.println("BLE device started, now you can pair it with your phone!");
 }
 
 void loop() {
-  processGPS();
-  processIMU();
+    // Read IMU data
+    sensors_event_t a, g, temp;
+    mpu.getEvent(&a, &g, &temp);
 
-  // Send telemetry data to all WebSocket clients
-  String telemetry = getTelemetryJSON();
-  ws.textAll(telemetry);
-  Serial.println("WebSocket: Telemetry data sent.");
+    // Update telemetry data
+    g_force_x = a.acceleration.x;
+    g_force_y = a.acceleration.y;
+    g_force_z = a.acceleration.z;
+    pitch = atan2(g_force_y, g_force_z) * 180 / PI;
+    roll = atan2(-g_force_x, sqrt(g_force_y * g_force_y + g_force_z * g_force_z)) * 180 / PI;
 
-  delay(500); // Adjust as needed for update rate
+    // Calculate slope
+    slope = atan2(g_force_x, sqrt(g_force_y * g_force_y + g_force_z * g_force_z)) * 180 / PI;
+
+    // Create JSON object
+    StaticJsonDocument<200> doc;
+    doc["g_force_x"] = g_force_x;
+    doc["g_force_y"] = g_force_y;
+    doc["g_force_z"] = g_force_z;
+    doc["pitch"] = pitch;
+    doc["roll"] = roll;
+    doc["slope"] = slope;
+
+    // Serialize JSON to string
+    String output;
+    serializeJson(doc, output);
+
+    // Send data over BLE if connected
+    if (deviceConnected) {
+        pCharacteristic->setValue(output.c_str());
+        pCharacteristic->notify();
+        Serial.println("Data sent over BLE: " + output);
+    } else {
+        Serial.println("No BLE clients connected.");
+    }
+
+    // Log the output for debugging
+    Serial.println("Telemetry data: " + output);
+
+    // Handle reconnection
+    if (!deviceConnected && oldDeviceConnected) {
+        delay(500); // Give the BLE stack the chance to get things ready
+        pServer->startAdvertising(); // Restart advertising
+        Serial.println("Restart advertising");
+        oldDeviceConnected = deviceConnected;
+    }
+
+    // Handle disconnection
+    if (deviceConnected && !oldDeviceConnected) {
+        oldDeviceConnected = deviceConnected;
+    }
+
+    // Delay for a while
+    delay(1000);
 }
