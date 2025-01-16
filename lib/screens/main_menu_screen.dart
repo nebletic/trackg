@@ -13,6 +13,8 @@ class MainMenuScreen extends StatelessWidget {
     'mini het pops and bangs lauft nöd',
   ];
 
+  const MainMenuScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
