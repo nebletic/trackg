@@ -4,7 +4,7 @@ china dragy wil mir arm sind
 
 ## Getting Started
 
-frög jonny shabai
+frög jonny shabai (mr. e92)
 
 er isch ceo
 
