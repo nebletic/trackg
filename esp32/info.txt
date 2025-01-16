@@ -1,0 +1,11 @@
+use board "ESP32-WROOM-DA" for best compatability
+
+download missing libraries
+TinyGPSPlus
+Adafruit MPU6050
+ASYNCTCP
+ESPAsyncWebServer
+ArduinoJson
+...
+..
+.

@@ -1,24 +1,273 @@
 // lib/screens/dashboard_screen.dart
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/settings_provider.dart';
+import 'package:geolocator/geolocator.dart';
+import 'track_screen.dart';
 import 'settings_screen.dart';
 
-class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
+class TrackSelectorScreen extends StatefulWidget {
+  @override
+  _TrackSelectorScreenState createState() => _TrackSelectorScreenState();
+}
+
+class _TrackSelectorScreenState extends State<TrackSelectorScreen> {
+  final List<Map<String, dynamic>> tracks = [
+    {
+      'name': 'Current Position',
+      'description': 'Drive responsibly! (Requires Location Services)',
+      'imagePath': 'assets/placeholder.png',
+      'logoPath': 'assets/placeholder.png',
+      'boundingBox': null, // No predefined area
+    },
+    {
+      'name': 'Nürburgring Nordschleife',
+      'description': 'The Green Hell - 20.8 km of legendary racing history.',
+      'imagePath': 'assets/track_nordschleife.jpg',
+      'logoPath': 'assets/logo_nordschleife.png',
+      'boundingBox': {
+        'minLat': 50.3239,
+        'maxLat': 50.4390,
+        'minLng': 6.9369,
+        'maxLng': 7.0149,
+      },
+    },
+    {
+      'name': 'Circuit de Spa-Francorchamps',
+      'description': 'Home of the Belgian GP - Iconic turns like Eau Rouge.',
+      'imagePath': 'assets/track_spa.jpg',
+      'logoPath': 'assets/logo_spa.png',
+      'boundingBox': {
+        'minLat': 50.4283,
+        'maxLat': 50.4515,
+        'minLng': 5.9406,
+        'maxLng': 5.9707,
+      },
+    },
+    {
+      'name': 'Silverstone Circuit',
+      'description': 'The birthplace of Formula 1 - Fast and technical.',
+      'imagePath': 'assets/track_silverstone.jpg',
+      'logoPath': 'assets/logo_silverstone.png',
+      'boundingBox': {
+        'minLat': 52.0615,
+        'maxLat': 52.0899,
+        'minLng': -1.0201,
+        'maxLng': -0.9956,
+      },
+    },
+    {
+      'name': 'Autodromo Nazionale Monza',
+      'description': 'Temple of Speed - High-speed straights and chicanes.',
+      'imagePath': 'assets/track_monza.jpg',
+      'logoPath': 'assets/logo_monza.png',
+      'boundingBox': {
+        'minLat': 45.6105,
+        'maxLat': 45.6235,
+        'minLng': 9.2655,
+        'maxLng': 9.2895,
+      },
+    },
+    {
+      'name': 'Autodromo Enzo e Dino Ferrari',
+      'description': 'Imola - A historic circuit with challenging corners.',
+      'imagePath': 'assets/track_imola.jpg',
+      'logoPath': 'assets/logo_imola.png',
+      'boundingBox': {
+        'minLat': 44.3413,
+        'maxLat': 44.3595,
+        'minLng': 11.6986,
+        'maxLng': 11.7209,
+      },
+    },
+    {
+      'name': 'Circuito Ascari',
+      'description': 'Exclusive and technical - A driver’s paradise.',
+      'imagePath': 'assets/track_ascari.jpg',
+      'logoPath': 'assets/logo_ascari.png',
+      'boundingBox': {
+        'minLat': 36.7995,
+        'maxLat': 36.8185,
+        'minLng': -5.1650,
+        'maxLng': -5.1450,
+      },
+    },
+    {
+      'name': 'Red Bull Ring',
+      'description': 'Austria’s gem - High-speed and stunning scenery.',
+      'imagePath': 'assets/track_redbullring.jpg',
+      'logoPath': 'assets/logo_redbullring.png',
+      'boundingBox': {
+        'minLat': 47.2171,
+        'maxLat': 47.2250,
+        'minLng': 14.7555,
+        'maxLng': 14.7705,
+      },
+    },
+    {
+      'name': 'Autodromo Vallelunga',
+      'description': 'Technical and versatile - A testing ground for cars.',
+      'imagePath': 'assets/track_vallelunga.jpg',
+      'logoPath': 'assets/logo_vallelunga.png',
+      'boundingBox': {
+        'minLat': 42.1305,
+        'maxLat': 42.1450,
+        'minLng': 12.4135,
+        'maxLng': 12.4350,
+      },
+    },
+    {
+      'name': 'Circuito de Vila Real',
+      'description': 'A thrilling street circuit in Portugal.',
+      'imagePath': 'assets/track_vilareal.jpg',
+      'logoPath': 'assets/logo_vilareal.png',
+      'boundingBox': {
+        'minLat': 41.2930,
+        'maxLat': 41.3050,
+        'minLng': -7.7330,
+        'maxLng': -7.7170,
+      },
+    },
+    {
+      'name': 'Autódromo Internacional do Algarve',
+      'description': 'Portimão - Rollercoaster-like elevation changes.',
+      'imagePath': 'assets/track_algarve.jpg',
+      'logoPath': 'assets/logo_algarve.png',
+      'boundingBox': {
+        'minLat': 37.1820,
+        'maxLat': 37.2000,
+        'minLng': -8.6250,
+        'maxLng': -8.6050,
+      },
+    },
+    {
+      'name': 'Circuit Paul Ricard',
+      'description': 'Colorful stripes and high-speed straights.',
+      'imagePath': 'assets/track_paulricard.jpg',
+      'logoPath': 'assets/logo_paulricard.png',
+      'boundingBox': {
+        'minLat': 43.2475,
+        'maxLat': 43.2610,
+        'minLng': 5.7920,
+        'maxLng': 5.8170,
+      },
+    },
+    {
+      'name': 'Winterthur',
+      'description': 'Töss isch ume ou',
+      'imagePath': 'assets/track_winti.jpeg',
+      'logoPath': 'assets/logo_winti.png',
+      'boundingBox': {
+        'minLat': 47.4980,
+        'maxLat': 47.5080,
+        'minLng': 8.7010,
+        'maxLng': 8.7210,
+      },
+    },
+  ];
+
+  String searchQuery = '';
+  late List<Map<String, dynamic>> filteredTracks;
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    filteredTracks = tracks; // Initialize with all tracks
+  }
+
+  void _filterTracks(String query) {
+    setState(() {
+      searchQuery = query.trim().toLowerCase(); // Normalize the query
+
+      if (searchQuery.isEmpty) {
+        filteredTracks = tracks; // Show all tracks if the query is empty
+      } else {
+        // Use regex to match the query anywhere in the name or description
+        final regex = RegExp(RegExp.escape(searchQuery), caseSensitive: false);
+
+        filteredTracks = tracks.where((track) {
+          final trackName = track['name']!;
+          final trackDescription = track['description']!;
+          return regex.hasMatch(trackName) || regex.hasMatch(trackDescription);
+        }).toList();
+      }
+    });
+  }
+
+  Future<void> _autoLocateTrack() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      // Check location permissions
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          // Permissions are denied
+          throw 'Location permissions are denied. Please enable them in settings.';
+        }
+      }
+
+      // Get current position
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      final userLat = position.latitude;
+      final userLng = position.longitude;
+
+      // Check if user is within any track's bounding box
+      for (var track in tracks) {
+        final boundingBox = track['boundingBox'];
+        if (boundingBox != null) {
+          if (userLat >= boundingBox['minLat'] &&
+              userLat <= boundingBox['maxLat'] &&
+              userLng >= boundingBox['minLng'] &&
+              userLng <= boundingBox['maxLng']) {
+            // Match found! Show the track screen
+            Navigator.of(context).push(_createSlideRoute(
+              TrackScreen(
+                trackName: track['name'],
+                trackDescription: track['description'],
+                trackLogoPath: track['logoPath'],
+              ),
+            ));
+            setState(() {
+              isLoading = false;
+            });
+            return;
+          }
+        }
+      }
+
+      // No track matched
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No track found at your location.')),
+      );
+    } catch (e) {
+      // Handle errors (e.g., location permissions denied)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
-    final settingsProvider = Provider.of<SettingsProvider>(context);
-    final theme = Theme.of(context); // Access the current theme
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nordschleife BTG'),
+        title: const Text('Select a Track'),
         centerTitle: true,
-        backgroundColor: theme.colorScheme.primary, // Use primary color from ColorScheme
+        backgroundColor: theme.colorScheme.primary,
         actions: [
-          // Settings Icon
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
@@ -30,135 +279,144 @@ class DashboardScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _buildConnectionStatus(theme),
-            const SizedBox(height: 20),
-            _buildLapInfo(theme),
-            const SizedBox(height: 20),
-            _buildTimers(theme),
-            const SizedBox(height: 20),
-            _buildGaugesRow(theme),
-          ],
-        ),
-      ),
-      backgroundColor: theme.colorScheme.surface, // Use theme's surface color
-    );
-  }
-
-  // Adjusted to use theme's colors for the connection status
-  Widget _buildConnectionStatus(ThemeData theme) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.secondaryContainer, // Use secondary container color
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        'CONNECTED!',
-        style: theme.textTheme.bodyLarge?.copyWith(
-          color: theme.colorScheme.onSecondaryContainer, // Contrast text color
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLapInfo(ThemeData theme) {
-    return Column(
-      children: [
-        Image.asset(
-          'assets/nurburgring_logo.png',
-          height: 50,
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Lap 3',
-          style: theme.textTheme.headlineMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.onSurface, // Adapt to surface color
-          ),
-        ),
-      ],
-    );
-  }
-
-  // Adjusted to use theme's text styles and colors
-  Widget _buildTimers(ThemeData theme) {
-    return Column(
-      children: [
-        Text(
-          '01:23.592',
-          style: theme.textTheme.headlineLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.onSurface, // Adapt to surface color
-          ),
-        ),
-        Text(
-          'PREDICTED: 07:23.000',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.secondary, // Use theme's secondary color
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          '-0.592',
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: Colors.red,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    );
-  }
-
-  // Gauges now adapt to the theme's colors
-  Widget _buildGaugesRow(ThemeData theme) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        _buildGauge('10', 'OAT', theme.colorScheme.primary, theme),
-        _buildGauge('Signal', 'STRENGTH', theme.colorScheme.secondary, theme),
-        _buildGauge('0.0', 'G-FORCE', theme.colorScheme.tertiary, theme),
-        _buildGauge('-3%', 'SLOPE', theme.colorScheme.error, theme), // Example with error color
-      ],
-    );
-  }
-
-  // Adjust gauge color based on the theme using colorScheme
-  Widget _buildGauge(String value, String label, Color color, dynamic theme) {
-    return Column(
-      children: [
-        Container(
-          height: 80,
-          width: 80,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: color, width: 4), // Use theme color
-          ),
-          child: Center(
-            child: Text(
-              value,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: color, // Ensure text uses the same color as the gauge
+      body: Column(
+        children: [
+          // Search Bar
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search Tracks...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
+              onChanged: _filterTracks,
+            ),
+          ),
+          // Auto-Locate Button
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(), // Show spinner if loading
+                  )
+                : ElevatedButton.icon(
+              icon: const Icon(Icons.gps_fixed),
+              label: const Text('Auto-Locate Track'),
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size.fromHeight(50),
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onPressed: _autoLocateTrack,
+            ),
+          ),
+          // Track Selector Buttons
+          Expanded(
+            child: ListView.builder(
+              itemCount: filteredTracks.length,
+              itemBuilder: (context, index) {
+                final track = filteredTracks[index];
+                return _buildTrackButton(
+                  context,
+                  name: track['name']!,
+                  description: track['description']!,
+                  imagePath: track['imagePath']!,
+                  logoPath: track['logoPath']!,
+                  onTap: () {
+                    // Navigate to the selected track's screen
+                  },
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTrackButton(
+    BuildContext context, {
+    required String name,
+    required String description,
+    required String imagePath,
+    required String logoPath,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(_createSlideRoute(
+          TrackScreen(
+            trackName: name,
+            trackDescription: description,
+            trackLogoPath: logoPath,
+          ),
+        ));
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        height: 120,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          image: DecorationImage(
+            image: AssetImage(imagePath),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.black.withOpacity(0.4),
+              BlendMode.srcOver,
             ),
           ),
         ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            color: theme.colorScheme.onSurface, // Adapt to surface color
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                name,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                description,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                ),
+              ),
+            ],
           ),
         ),
-      ],
+      ),
+    );
+  }
+
+  Route _createSlideRoute(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(1.0, 0.0); // Slide in from the right
+        const end = Offset.zero;
+        const curve = Curves.easeInOut;
+
+        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var offsetAnimation = animation.drive(tween);
+
+        return SlideTransition(
+          position: offsetAnimation,
+          child: child,
+        );
+      },
     );
   }
 }

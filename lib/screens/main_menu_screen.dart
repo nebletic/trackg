@@ -20,96 +20,110 @@ class MainMenuScreen extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          // Title/News Section (Top 1/3)
-          Expanded(
-            flex: 1,
-            child: Container(
-              color: Theme.of(context).colorScheme.primary,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'App News',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+        Container(
+          height: 20,
+          color: Theme.of(context).colorScheme.primary,
+          ),
+        // App Logo
+        Container(
+          width: double.infinity,
+          color: Theme.of(context).colorScheme.primary,
+          padding: const EdgeInsets.all(16.0),
+          child: Image.asset(
+            'assets/menu_trackglogo_tr.png',
+            height: 60, // Adjust the height as needed
+          ),
+        ),
+        // Title/News Section (Top 1/3)
+        ColoredBox(
+          color: Theme.of(context).colorScheme.primary,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'App News',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
-                  const SizedBox(height: 10),
-                  _buildNewsCarousel(context),
-                ],
-              ),
+                ),
+                const SizedBox(height: 10),
+                _buildNewsCarousel(context),
+              ],
             ),
           ),
+        ),
           // Buttons Section (Bottom 2/3)
           Expanded(
-            flex: 3,
+            flex: 2,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: GridView.count(
-                crossAxisCount: 2, // 2 buttons per row
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                children: [
-                  _buildAnimatedMenuTile(
-                    context,
-                    title: 'Dashboard',
-                    imagePath: 'assets/placeholder.png',
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => DashboardScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  _buildAnimatedMenuTile(
-                    context,
-                    title: 'Settings',
-                    imagePath: 'assets/placeholder.png',
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => SettingsScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  _buildAnimatedMenuTile(
-                    context,
-                    title: 'Profile',
-                    imagePath: 'assets/placeholder.png',
-                    onTap: () {
-                      // Add navigation to Profile screen
-                    },
-                  ),
-                  _buildAnimatedMenuTile(
-                    context,
-                    title: 'Help',
-                    imagePath: 'assets/placeholder.png',
-                    onTap: () {
-                      // Add navigation to Help/Support screen
-                    },
-                  ),
-                  _buildAnimatedMenuTile(
-                    context,
-                    title: 'News',
-                    imagePath: 'assets/placeholder.png',
-                    onTap: () {
-                      // Add navigation to News/Updates screen
-                    },
-                  ),
-                  _buildAnimatedMenuTile(
-                    context,
-                    title: 'About',
-                    imagePath: 'assets/placeholder.png',
-                    onTap: () {
-                      // Add navigation to About screen
-                    },
-                  ),
-                ],
-              ),
+              crossAxisCount: 2, // 2 buttons per row
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              children: [
+                _buildAnimatedMenuTile(
+                  context,
+                  title: 'Track Selection',
+                  icon: Icons.track_changes,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => TrackSelectorScreen(),
+                      ),
+                    );
+                  },
+                ),
+                _buildAnimatedMenuTile(
+                  context,
+                  title: 'Settings',
+                  icon: Icons.settings,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => SettingsScreen(),
+                      ),
+                    );
+                  },
+                ),
+                _buildAnimatedMenuTile(
+                  context,
+                  title: 'Profile',
+                  icon: Icons.person,
+                  onTap: () {
+                    // Add navigation to Profile screen
+                  },
+                ),
+                _buildAnimatedMenuTile(
+                  context,
+                  title: 'Help',
+                  icon: Icons.help,
+                  onTap: () {
+                    // Add navigation to Help/Support screen
+                  },
+                ),
+                _buildAnimatedMenuTile(
+                  context,
+                  title: 'News',
+                  icon: Icons.article,
+                  onTap: () {
+                    // Add navigation to News/Updates screen
+                  },
+                ),
+                _buildAnimatedMenuTile(
+                  context,
+                  title: 'About',
+                  icon: Icons.info,
+                  onTap: () {
+                    // Add navigation to About screen
+                  },
+                ),
+              ],
+            ),
             ),
           ),
         ],
@@ -119,7 +133,7 @@ class MainMenuScreen extends StatelessWidget {
 
   Widget _buildNewsCarousel(BuildContext context) {
     return SizedBox(
-      height: 100, // adjust the height as needed
+      height: 70, // adjust the height as needed
       child: Swiper(
         autoplay: true,
         autoplayDelay: 3000,
@@ -144,7 +158,7 @@ class MainMenuScreen extends StatelessWidget {
   Widget _buildAnimatedMenuTile(
     BuildContext context, {
     required String title,
-    required String imagePath,
+    required IconData icon,
     required VoidCallback onTap,
   }) {
     final theme = Theme.of(context);
@@ -157,14 +171,7 @@ class MainMenuScreen extends StatelessWidget {
           duration: const Duration(milliseconds: 300),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            image: DecorationImage(
-              image: AssetImage(imagePath),
-              fit: BoxFit.cover,
-              colorFilter: ColorFilter.mode(
-                Colors.black.withOpacity(0.4), // Slightly opaque overlay
-                BlendMode.srcOver,
-              ),
-            ),
+            color: theme.colorScheme.primary.withOpacity(0.1),
             boxShadow: [
               BoxShadow(
                 color: theme.colorScheme.onSurface.withOpacity(0.2),
@@ -180,12 +187,19 @@ class MainMenuScreen extends StatelessWidget {
               splashColor: theme.colorScheme.primary.withOpacity(0.2), // Ripple effect
               onTap: onTap,
               child: Center(
-                child: Text(
-                  title,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: theme.colorScheme.onSurface,
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(icon, size: 40, color: theme.colorScheme.onSurface),
+                    const SizedBox(height: 8),
+                    Text(
+                      title,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: theme.colorScheme.onSurface,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
