@@ -56,7 +56,7 @@ class SettingsScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             alignment: Alignment.center,
             child: const Text(
-              'Made with hatred by cr7 and nebletic\nVersion 1.0.0',
+              'Made by rtavares and salavirad\nVersion 2.0.0',
               style: TextStyle(color: Colors.grey),
               textAlign: TextAlign.center,
             ),
@@ -131,7 +131,7 @@ class SettingsScreen extends StatelessWidget {
         return AlertDialog(
           title: const Text('About'),
           content: const Text(
-              'TrackG\nVersion: 1.0.0\ndeveloped by cr7 and nebletic.'),
+              'TrackG\nVersion: 2.0.0\ndeveloped by rtavares and salavirad.'),
           actions: <Widget>[
             TextButton(
               onPressed: () {

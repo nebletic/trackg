@@ -88,6 +88,7 @@ void loop() {
     // Calculate slope
     slope = atan2(g_force_x, sqrt(g_force_y * g_force_y + g_force_z * g_force_z)) * 180 / PI;
 
+
     // Create JSON object
     StaticJsonDocument<200> doc;
     doc["g_force_x"] = g_force_x;
@@ -111,7 +112,7 @@ void loop() {
     }
 
     // Log the output for debugging
-    Serial.println("Telemetry data: " + output);
+    //Serial.println("Telemetry data: " + output);
 
     // Handle reconnection
     if (!deviceConnected && oldDeviceConnected) {
@@ -127,5 +128,5 @@ void loop() {
     }
 
     // Delay for a while
-    delay(1000);
+    delay(250);
 }
