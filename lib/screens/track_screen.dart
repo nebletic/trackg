@@ -8,6 +8,10 @@ import 'settings_screen.dart';
 import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:async';
+import 'package:provider/provider.dart';
+import '../providers/telemetry_provider.dart'; // Import the telemetry provider
+import 'telemetry_screen.dart';
+
 
 class TrackScreen extends StatefulWidget {
   final String trackName;
@@ -121,6 +125,20 @@ class _TrackScreenState extends State<TrackScreen> {
   void _processBluetoothData(String data) {
     try {
       final jsonData = jsonDecode(data);
+      //final telemetryEntry = {
+      //  'time': DateTime.now().toIso8601String(),
+      //  'g_force_x': jsonData['g_force_x'] ?? 0.0,
+      //  'g_force_y': jsonData['g_force_y'] ?? 0.0,
+      //  'g_force_z': jsonData['g_force_z'] ?? 0.0,
+      //  'pitch': jsonData['pitch'] ?? 0.0,
+      //  'roll': jsonData['roll'] ?? 0.0,
+      //  'speed': _currentSpeed,
+      //  'altitude': _currentAltitude,
+      //};
+//
+      //// Save telemetry data to the provider
+      //Provider.of<TelemetryProvider>(context, listen: false).addTelemetry(telemetryEntry);
+//
       setState(() {
         _currentSlope = jsonData['slope'] ?? 0.0;
         _gForceX = jsonData['g_force_x'] ?? 0.0;
@@ -216,6 +234,9 @@ class _TrackScreenState extends State<TrackScreen> {
   // ---------------------------------------------------
   @override
   void dispose() {
+    // Clear telemetry data on session end
+    //Provider.of<TelemetryProvider>(context, listen: false).clearTelemetry();
+
     // Disconnect Bluetooth device
     _connectedDevice?.disconnect();
 
@@ -253,6 +274,16 @@ class _TrackScreenState extends State<TrackScreen> {
               Navigator.of(context).push(MaterialPageRoute(builder: (context) => SettingsScreen()));
             },
           ),
+          //IconButton(
+          //  icon: const Icon(Icons.bar_chart),
+          //  onPressed: () {
+          //    Navigator.of(context).push(
+          //      MaterialPageRoute(
+          //        builder: (context) => const TelemetryScreen(),
+          //      ),
+          //    );
+          //  },
+          //),
         ],
       ),
       body: _currentPosition == null
@@ -374,6 +405,7 @@ class _TrackScreenState extends State<TrackScreen> {
 
   Widget _buildPitchRollIndicator(ThemeData theme) {
     const double maxOffset = 40.0; // Maximum offset for the ball
+    const double maxDegrees = 40.0; // Degrees at which the ball reaches the max offset
     return Column(
       children: [
         Stack(
@@ -393,8 +425,8 @@ class _TrackScreenState extends State<TrackScreen> {
             // Moving Ball
             Transform.translate(
               offset: Offset(
-                (_roll.clamp(-1, 1) * maxOffset),
-                (_pitch.clamp(-1, 1) * -maxOffset),
+                (_roll / maxDegrees).clamp(-1, 1) * maxOffset,
+                (_pitch / maxDegrees).clamp(-1, 1) * -maxOffset,
               ),
               child: Container(
                 height: 20,

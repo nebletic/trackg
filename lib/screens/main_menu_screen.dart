@@ -7,7 +7,7 @@ import 'settings_screen.dart';
 class MainMenuScreen extends StatelessWidget {
   final List<String> newsItems = [
     'TrackG v2',
-    'NEW TRACKS: Nürburgring, Spa-Francorchamps, and more!',
+    'NEW TRACKS: Nürburgring and Spa!',
     'Jonny Shaba',
     'COMING SOON: Lap Time Leaderboards!',
   ];
