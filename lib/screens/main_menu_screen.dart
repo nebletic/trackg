@@ -6,14 +6,11 @@ import 'settings_screen.dart';
 
 class MainMenuScreen extends StatelessWidget {
   final List<String> newsItems = [
-    'trackg isch ume',
-    'n54 lauft no!!!',
-    'cle 53 wird usglifert!',
-    'volvo und pcv oder so',
-    'mini het pops and bangs lauft nöd',
+    'TrackG v2',
+    'NEW TRACKS: Nürburgring, Spa-Francorchamps, and more!',
+    'Jonny Shaba',
+    'COMING SOON: Lap Time Leaderboards!',
   ];
-
-  const MainMenuScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
